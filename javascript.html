@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<!--
+  Copyright 2010 Ryan Morlok (ryan.morlok@morlok.com), Sam Slotsky
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+
+  Slide format based on HTML5 presenation code by Google Inc. See
+  below for details.
+-->
+<!--
+  Copyright 2010 Google Inc.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  Original slides: Marcin Wichary (mwichary@google.com)
+  Modifications: Ernest Delgado (ernestd@google.com)
+                 Alex Russell (slightlyoff@chromium.org)
+                 Brad Neuberg
+-->
+<html manifest="/html5/src/slides_manifest.php">
+  <head>
+    <meta charset="UTF-8">
+    <!--[if lt IE 9]>
+      <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <![endif]-->
+
+    <title>HTML5 presentation</title>
+    <link href='http://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono' rel='stylesheet' type='text/css' />
+    <link href="css/presentation.css" rel="stylesheet" type="text/css" />
+    
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+  </head>
+  <body>
+    <div class="presentation">
+      <div class="slides">
+        <div class="slide">
+          <section class="center intro">
+            <p>This presentation is an HTML5 website</p>
+            <p>Press <span class="key">&rarr;</span> key to advance.</p>
+            <p>Zoom in/out: <span class="key">Ctrl or Command</span> + <span class="key">+/-</span></p>
+            <p style="font-size: 25px">Having issues seeing the presentation? Read the <a href="disclaimer.html">disclaimer</a></p>
+          </section>
+        </div>
+                
+        <div class="slide">
+          <section class="center intro">
+            <hgroup>
+              <h1>
+                Introduction to JavaScript
+              </h1>
+              <h2>
+                by Ryan Morlok and Sam Slotsky
+              </h2>
+            </hgroup>
+          </section>
+        </div>
+
+		<div class="slide">
+          <section class="center intro">
+            <hgroup>
+              <h1>Goal:</h1>
+              <p>To learn JavaScript fundamentals so that WLB developers can understand and build Cobalt-like JavaScript widgets.</p>
+            </hgroup>
+          </section>
+        </div>
+		
+		<div class="slide">
+			<header>JavaScript Widgets</header>
+			<section>
+				<ul class="bullets medium">
+					<li>Generally refer to "widgets" as UI elements, other JavaScript objects will likely exist to handle business logic and bind things together.</li>
+					<li>Create a logical entity layer on top of the HTML DOM</p>
+					<li>Instead of interacting with the DOM directly, you interact with JavaScript objects that handle these DOM manipulations for you.</li>
+					<li>Can raise logical events to allow interactions with other widgets</li>
+				</ul>
+			</section>
+		</div>
+		
+		<div class="slide">
+          <section class="center intro">
+            <hgroup>
+              <h1>To program JavaScript well, we must embrace it for the language it is.</h1>
+            </hgroup>
+          </section>
+        </div>
+		
+        <div class="slide">
+          <header>JavaScript</header>
+          <section>
+			<ul class="bullets medium">
+				<li>Created by <a href="http://en.wikipedia.org/wiki/Brendan_Eich">Brendan Eich</a> at Netscape in 1995</li>
+				<li>Name "JavaScript" was used with License from Sun Microsystems as Netscape 
+					co-launched built-in support for Java.</li>
+				<li>Official name is ECMAScript</li>
+				<li>Language design influenced by <a href="http://en.wikipedia.org/wiki/Self_(programming_language)">Self</a> and <a href="http://en.wikipedia.org/wiki/Scheme_(programming_language)">Scheme</a></li>
+				<li>Language syntax influenced by C-style syntax</li>
+			</ul>
+          </section>
+        </div>
+		<div class="slide">
+			<header>Language Features</header>
+			<section>
+				<ul class="bullets">
+					<li>Scripting langauge</li>
+					<li>Dynamic, weakly typed</li>
+					<li>First-class functions</li>
+					<li>Closures</li>
+					<li>Prototype-based object-oriented</li>
+				</ul>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Variables</header>
+			<section>
+				<p>Types are associated with values, not variables, determined at runtime.</p>
+				<p>To declare a variable, use the <tt>var</tt> keyword</p>
+				<pre>var foo = "abc";</pre>
+				<p>Assigning a value to a variable that is undefined will create a global. Global variables are properties of the global object (<tt>window</tt>).  AVOID DOING THIS.</p>
+				<pre>function makeGlobal() {
+  bar = "xyz";
+  alert(bar === window.bar); // true
+}
+
+makeGlobal();
+alert(bar); // "xyz" </pre>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Variable Scrope</header>
+			<section>
+				<p>Variables have function scope instead of block scope as in C, C#, Java.</p>
+<pre>function foo(x) {
+    if( x > 2 ) {
+        var z = 1;
+    } else {
+        var z = 50;
+    }
+	
+    return z;
+}</pre>
+				<p>It is generally better to declare the variable as you would in C# or Java for better
+					readability, however.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Weakly Typed</header>
+			<section>
+				<p>You can determine the type of a variable by using the <tt>typeof</tt> keywords.  Type names are returned as strings.</p>
+				<pre>typeof "abc"; // "string"</pre>
+				<p>Because JavaScript is weakly typed, you can reassign values of different types to the same variable.</p>
+				<pre>var chi = "abc";
+typeof chi; // "string"
+chi = true;
+typeof chi; // "boolean"
+chi = 123;
+typeof chi; // "number"</pre>
+				<p>Other than built-in types, all values have a type of <tt>"object"</tt>.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Truthiness</header>
+			<section>
+				<p>In JavaScript, some values are "falsy" meaning they are interpreted as false in logical expressions.</p>
+				<p>The fallowing are falsy values:</p>
+				<ul class="bullets small">
+					<li><tt>false</tt></li>
+					<li><tt>null</tt></li>
+					<li><tt>undefined</tt></li>
+					<li>The empty string <tt>''</tt></li>
+					<li>The number <tt>0</tt></li>
+					<li>The number <tt>NaN</tt></li>
+				</ul>
+				<p>All other values are truthy.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Logical Operators</header>
+			<section>
+				<p>Logical operators (and: <tt>&amp;&amp;</tt>, or: <tt>||</tt>, not: <tt>!</tt>) work as expected using short-circuit evaluation.</p>
+					<p><tt>||</tt> returns the value of the first operand when it is truthy, otherwise it returns the value of the second operand.</p>
+					<p><tt>&amp;&amp;</tt> returns the value of the second value when the first operand is truthy, otherwise the value of the first operand.</p>
+				<pre>var a = 1 || 0;           // 1
+var d = 0 &amp;&amp; 1;           // 0
+var a = null || "cat";    // "cat"
+var b = "cat" &amp;&amp; "mouse"; // "mouse"</pre>
+				<p>This technique can create shorthands for dealing with null checks we will see later.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Equality Comparison</header>
+			<section>
+				<p>JavaScript has two ways of checking if values are the same. <tt>==</tt> uses type coersion and <tt>===</tt> does not.</p>
+				<p>Type coersion means that the interpreter will attempt to make the values comparable by converting to the same type.  
+					Unfortunately, it can be difficult to predict the results.</p>
+				<pre>0 == false         // true
+1 == true          // true
+undefined == null  // true
+1 == "cat"         // false
+true == "cat"      // false</pre>
+				<p>It is generally best to use the <tt>===</tt> operator as it requires the values and types to be the same, and produced more predictable results.</p>
+				<pre>0 === false        // false
+1 === true         // false
+undefined === null // false
+1 === "cat"        // false
+true === "cat"     // false</pre>
+				<p>For more information see the <a href="https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference/Operators/Comparison_Operators">Mozilla Developer Center</a>.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header><tt>null</tt> vs. <tt>undefined</tt></header>
+			<section>
+			<p>Unlike in Java/C#, uninitialized variables have a value <tt>undefined</tt> instead of <tt>null</tt>.</p>
+			<pre>var foo;
+typeof foo; // "undefined"</pre>
+			<p><tt>null</tt> is a value you can assign to a variable to indicate it has no specific value.</p>
+			<pre>foo = null</pre>
+			<p>Since both values are falsy, you can use an <tt>if</tt> statement to check if a variable has a value:</p>
+			<pre>if( foo ) {
+    // Has a value
+}</pre>
+			<p>Explicitly checking against <tt>undefined</tt> is important, however, when checking if a parameter to a function or property on an object exists, as it is possible
+			that <tt>null</tt> was used for one of these values.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Functions</header>
+			<section>
+			<p>Functions are declared using the <tt>function</tt> keyword.</p>
+			<pre>function foo() {
+    alert("hi");
+}
+
+function bar() {
+    return 5;
+}</pre>
+			<p>Invoke a function using C-style syntax:</p>
+			<pre>foo();
+bar();</pre>
+			<p>Functions that do not return a value return the value <tt>undefined</tt></p>
+			<pre>typeof foo(); // "undefined"
+typeof bar(); // "number"</pre>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Functions are Values</header>
+			<section>
+				<p>As JavaScript is a functional programming language, functions values and can be assigned
+					to variables, passed to methods, and anything else that you can do with any other value.</p>
+				<p>When using functions as values, you frequently create annonymous functions, to do this just omit
+					the name of the function from the previous declaration style.</p>
+<pre>var myFunction = function() {
+    alert("hi");
+}</pre>
+				<p>Once you have the function value, you can invoke it using the same syntax as you would normally.</p>
+<pre>myFunction();</pre>
+				<p>Functions are often passed as parameters to other functions. The facilitates event handlers, callbacks, and the delegate
+					programming style that is common in JavaScript.</p>
+<pre>$("#myElement").bind("click", function(event) {
+    // Do event handling logic
+});</pre>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Fun with FUNctions</header>
+			<section>
+				<p>You can invoke functions immediately after creating them, this can be especially useful when creating closures, as we will see later.</p>
+<pre>function(message) {
+    alert(message);
+}("hi");</pre>
+				<p>This can also be useful when you want to do an inline recursive calculation.</p>
+<pre>var factorialOfTen = function factorial(val) {
+    if( val &lt;= 1 ) {
+        return 1;
+    } else {
+        return val * factorial(val - 1);
+    }
+}(10);</pre>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Function Parameters</header>
+			<section>
+				<p>Function parameters are listed in the parenthases. The var keyword is <em>not</em> used for parameters.</p>
+<pre>function foo(param1, param2) {... }</pre>
+				<p>Unlike Java or C#, passing a different number of parameters to a function than it declares is not an error,
+					though it may cause an error later in the application logic. Parameters that are not passed when calling the
+					function have a value of <tt>undefined</tt>.</p>
+<pre>function bar(a, b) {
+     alert(typeof a + ", " + typeof b);
+}
+
+bar(1, "cat"); // "numbder, string"
+bar("dog"); // "string, undefined"</pre>
+			<p>You cannot overload functions in JavaScript the way you can in Java or C#, but you can
+				get similar behavior by having a single function inspect the type of the passed parameters
+				and act differently.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header></header>
+			<section>
+			</section>
+		</div>
+		<div class="slide">
+			<header>Exercise: Create a counter function</header>
+			<section>
+				<p>Create a function <tt>createCounter</tt> that returns a function that increments a counter and returns the value each time it is called.</p>
+				
+				<p>Example:</p>
+<pre>var counter = createCounter();
+alert(counter()); // 0
+alert(counter()); // 1
+alert(counter()); // 2</pre>
+				<br />
+				
+				<img src="images/CounterScreenshot.png" alt="widget screenshot" style="display: block; margin-left: auto; margin-right: auto;"/>
+				<br />
+				<p>Implement your solution here: <a href="http://jsfiddle.net/S5gxK/3/">http://jsfiddle.net/S5gxK/3/</a></p>
+	
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Avoid Cluttering the Global Namespace</header>
+			<section>
+				<p>Because variables have function scope, we can avoid putting things in the global
+					scrope by using an annonymous function. The function is created then immediately executed</p>
+<pre>(function(window, document, $) {
+	
+    var thisIsNotGlobal = "abc";
+	
+    function notGlobal() { ... }
+	
+    window.thisIsGlobal = function() { ... }
+
+})(window, document, jQuery);</pre>
+			<p>From this "hidden" scope we can intentially insert items into the global scope by adding properties to <tt>window</tt></p>
+			<p>Note that references of <tt>window</tt>, <tt>document</tt>, <tt>jQuery</tt>, etc can be passed into the annonymous function. 
+				This gaurds against name collions (allowing us to safely use the <tt>$</tt> jQuery shorthand), and avoids
+				variable lookup into the gloabl scope for a performance boost.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Namespaces</header>
+			<section>
+				<p>JavaScript does not have a built in concept of namespaces, but a similar effect can be acheived through nested objects:</p>
+<pre>if( typeof Westlaw === "undefined" ) {
+	Westlaw = {};
+}
+
+if( typeof Westlaw.WLB === "undefined" ) {
+	Westlaw.WLB = {};
+}
+
+Westlaw.WLB.Exampe = {
+	...
+}</pre>
+				<p>The <tt>if</tt> if statements are to check if the namespace has already been started by another js file.  
+					This avoids clobbering existing objects in the namespace. Note that all that is being done here is create
+					generic objects and populate them with sub-objects and functions.</pre>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header></header>
+			<section>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>JavaScript Widgets</header>
+			<section>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Example Widget</header>
+			<section>
+				<pre>var map = {};
+map.numbers = { name: "numbers", value: "numbers", list: [1, 2, 3] };
+map.letters = { name: "letters", value: "letters", list: ["a", "b", "c"] };
+var dependentDropdown 
+    = new Example.DependentDropdown(
+		$(".examplewidget #placeholder"), 
+		"Select1Id", 
+		"Select2Id", 
+		"Select 1 Label", 
+		"Select 2 Label", 
+		map);</pre>
+				<style type="text/css">
+				.examplewidget h1 {
+					font-size: 16px;
+					font-weight: bold;
+					font-family: arial, sans-serif;
+				}
+				.examplewidget label {
+					font-size: 14px;
+				}
+				.examplewidget.wrapper {
+					background: -webkit-gradient(linear, left bottom, left top, from(#bbf), to(#ddf));
+					background: -moz-linear-gradient(bottom, #bbf, #fdf);
+					background: linear-gradient(bottom, #bbf, #fdf);
+					border: 1px solid rgba(0, 0, 255, 0.3);
+					-moz-border-radius: 8px; 
+					-webkit-border-radius: 8px;
+					padding: 8px;
+					width: 300px;
+					margin-right: auto;
+					margin-left: auto;
+					margin-top: 10px;
+					margin-bottom: 10px;
+					text-align: center;
+				}
+				.examplewidget #placeholder {
+					margin-left: auto;
+					margin-right: auto;
+					margin-top: 5px;
+					margin-bottom: 5px;
+				}
+				</style>
+				<div class="examplewidget wrapper"><h1>Dependent Dropdown Widget</h1><div id="placeholder"></div></div>
+				<script type="text/javascript" src="js/DependentDropdown.js"></script>
+				<script type="text/javascript">
+					var map = {};
+					map.numbers = { name: "numbers", value: "numbers", list: [1, 2, 3] };
+					map.letters = { name: "letters", value: "letters", list: ["a", "b", "c"] };
+					var dependentDropdown = new Example.DependentDropdown($(".examplewidget #placeholder"), "Select1Id", "Select2Id", "Select 1 Label", "Select 2 Label", map);
+				</script>
+			</section>
+		</div>
+		<div class="slide">
+			<header>Web Service Calls</header>
+			<section>
+			<ul class="bullets">
+				<li>Uses XMLHttpRequest</li>
+				<li>Multiple ways to invoke in WAF 
+					<ul class="bullets medium">
+						<li>jQuery</li>
+						<li>AJAXCore</li>
+						<li>ASP.NET AJAX</li>						
+					</ul></li>
+				<li>Asynchronous &mdash; call returns immediately; provide callback functions for success/fail.</li>
+			</ul>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Web Service Calls - jQuery</header>
+			<section>
+			<p>jQuery does a GET by default.</p>
+			<pre>function onSuccess(data) {
+    alert(data);
+}
+
+$.ajax({
+    url: 'http://www.example.com/users/1',
+    success: onSuccess
+});</pre>
+<p>See the <a href="http://api.jquery.com/jQuery.ajax/">jQuery.ajax documenation</a> for more details.</p>
+<p>jQuery version in use in WAF has bug where high security in IE prevents ActiveX controls from loading, preventing AJAX from working*.  jQuery.ajax is not used in WAF.</p>
+<p class="footnote">This problem is corrected in jQuery 1.4.1</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Web Service Calls - AJAXCore</header>
+			<section>
+			<p>To address the issues with jQuery.ajax, WAF has implemented its own AJAX call.  To use it, include AJAXCore_vXXXX.js.</p>
+			<pre>function onStatusCodeChanged(response) { 
+    if (response.ServiceStatus.StatusCode == 0) {
+        alert(response.Result);
+    }
+}
+
+LoadXMLDoc(
+    'http://www.example.com/users/1', 
+    onStatusCodeChanged, 
+    true /* asynchronous */);</pre>
+			<p>AJAXCore falls back to an iFrame when there are problems with XMLHttpRequest (read: IE security).</p>
+			<p><tt>onStatusCodeChanged</tt> is called whenenver the state of the underlying XMLHttpRequest changes.  <tt>response.ServiceStatus.StatusCode == 0</tt> indicates success.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Web Service Calls - ASP.NET AJAX</header>
+			<section>
+			<p>ASP.NET AJAX wraps web service and related objects in faux JavaScript "classes" to make the experience of interacting with the service be similar to how it would be in C#.</p>
+			<pre>function onSuccess(returnedValue) {
+    alert(returnedValue);
+}
+
+function onFailure() { }
+
+Example.Services.MyWebService(param1, param2, onSuccess, onFailure);</pre>
+			<p>To tell ASP.NET to include the reference to the faux JavaScript, do the following from your ASCX:</p>
+			<pre>this.BasePage.ScriptManager.Services.Add(
+                     new ServiceReference("/services/MyWebService.asmx"));</pre>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Excercise: Create a JavaScript Widget</header>
+			<section>
+				<p>Create a JavaScript widget that displays a colored box to the user.  The widget should expose a method <tt>toggleColor()</tt> 
+				that when invoked changes the color from <span style="color: red">red</span> to <span style="color: blue">blue</span> or 
+				<span style="color: blue">blue</span> to <span style="color: red">red</span>. The widget should also expose a method <tt>getColor()</tt>
+				that when invoked returns the current color as a string without changing the color of the widget.</p>
+				
+				<img src="images/ColorBoxWidgetScreenshot.png" alt="widget screenshot" style="display: block; margin-left: auto; margin-right: auto;"/>
+				
+				<p>The widget should be named <tt>Example.RedBlue</tt> and the constructor to the widget should take a single string parameter that
+				is a jQuery selector to a div that will function as the widget's parent element in the DOM.</p>
+				
+				<p>Styling has been provided for you. The widget should display it's box as a div.  To annotate the div as a box apply the <tt>Box</tt> CSS style.
+				When the box is red it should have the <tt>Red</tt> class. When the box is blue is should have the <tt>Blue</tt> class.</p>
+				
+				<p>Implement your widget here: <a href="http://jsfiddle.net/4EeHN/2/">http://jsfiddle.net/4EeHN/1/</a>.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>For More Information</header>
+			<section>
+			<ul class="bullets small">
+				<li><a href="http://www.amazon.com/JavaScript-Good-Parts-Douglas-Crockford/dp/0596517742">JavaScript: 
+				The Good Parts by Douglas Crockford</a></li>
+				<li><a href="https://developer.mozilla.org/en/JavaScript/Guide">Mozilla JavaScript Guide</a></li>
+				<li><a href="http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml">Google JavaScript Style Guide</a></li>
+			</ul>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Videos</header>
+			<section>
+			<ul class="bullets small">
+				<li><a href="http://www.youtube.com/watch?v=hQVTIJBZook">Douglas Crockford: JavaScript the Good Parts</a></li>
+				<li><a href="http://www.youtube.com/watch?v=mHtdZgou0qU">Nicholas Zakas: JavaScript Performance Issues</a></li>
+			</ul>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Exercise Solutions</header>
+			<section>
+				<p>Solutions to the exercises in this presentation can be found at the links below.</p>
+				<ul class="bullets medium">
+					<li><a href="http://jsfiddle.net/GYW3n/6/">Counter</a></li>
+					<li><a href="http://jsfiddle.net/JpxZA/20/">RedBlue Widget</a></li>
+				</ul>
+			</section>
+		</div>
+    </div> <!-- presentation -->
+    
+    <script>
+      (function() {
+        // bail in IE
+        var doc = document;
+        if (doc.all) { return; }
+
+        var disableBuilds = true; //true;
+
+        var ctr = 0;
+        var spaces = /\s+/, a1 = [""];
+
+        var toArray = function(list) {
+          return Array.prototype.slice.call(list||[], 0);
+        };
+
+        var byId = function(id) {
+          if (typeof id == "string") { return doc.getElementById(id); }
+          return id;
+        };
+
+        var query = function(query, root) {
+          if (!query) { return []; }
+          if (typeof query != "string") { return toArray(query); }
+          if (typeof root == "string"){
+            root = byId(root);
+            if(!root){ return []; }
+          }
+
+          root = root||document;
+          var rootIsDoc = (root.nodeType == 9);
+          var doc = rootIsDoc ? root : (root.ownerDocument||document);
+
+          // rewrite the query to be ID rooted
+          if (!rootIsDoc || (">~+".indexOf(query.charAt(0)) >= 0)) {
+            root.id = root.id||("qUnique"+(ctr++));
+            query = "#"+root.id+" "+query;
+          }
+          // don't choke on something like ".yada.yada >"
+          if (">~+".indexOf(query.slice(-1)) >= 0) { query += " *"; }
+
+          return toArray(doc.querySelectorAll(query));
+        };
+
+        var strToArray = function(s) {
+          if (typeof s == "string" || s instanceof String) {
+            if (s.indexOf(" ") < 0) {
+              a1[0] = s;
+              return a1;
+            } else {
+              return s.split(spaces);
+            }
+          }
+          return s;
+        };
+
+        var trim = function(str) {
+          return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+        };
+
+        var addClass = function(node, classStr) {
+          classStr = strToArray(classStr);
+          var cls = " " + node.className + " ";
+          for (var i = 0, len = classStr.length, c; i < len; ++i) {
+            c = classStr[i];
+            if (c && cls.indexOf(" " + c + " ") < 0) {
+              cls += c + " ";
+            }
+          }
+          node.className = trim(cls);
+        };
+
+        var removeClass = function(node, classStr) {
+          var cls;
+          if (classStr !== undefined) {
+            classStr = strToArray(classStr);
+            cls = " " + node.className + " ";
+            for (var i = 0, len = classStr.length; i < len; ++i) {
+              cls = cls.replace(" " + classStr[i] + " ", " ");
+            }
+            cls = trim(cls);
+          } else {
+            cls = "";
+          }
+          if (node.className != cls) {
+            node.className = cls;
+          }
+        };
+
+        var toggleClass = function(node, classStr) {
+          var cls = " " + node.className + " ";
+          if (cls.indexOf(" " + trim(classStr) + " ") >= 0) {
+            removeClass(node, classStr);
+          } else {
+            addClass(node, classStr);
+          }
+        };
+
+        var ua = navigator.userAgent;
+        var isFF = parseFloat(ua.split("Firefox/")[1]) || undefined;
+        var isWK = parseFloat(ua.split("WebKit/")[1]) || undefined;
+        var isOpera = parseFloat(ua.split("Opera/")[1]) || undefined;
+
+        var canTransition = (function() {
+          var ver = parseFloat(ua.split("Version/")[1]) || undefined;
+          // test to determine if this browser can handle CSS transitions.
+          var cachedCanTransition = 
+            (isWK || (isFF && isFF > 3.6 ) || (isOpera && ver >= 10.5));
+          return function() { return cachedCanTransition; }
+        })();
+
+        //
+        // Slide class
+        //
+        var Slide = function(node, idx) {
+          this._node = node;
+          if (idx >= 0) {
+            this._count = idx+1;
+          }
+          if (this._node) {
+            addClass(this._node, "slide distant-future");
+          }
+          this._makeCounter();
+          this._makeBuildList();
+        };
+
+        Slide.prototype = {
+          _node: null,
+          _count: 0,
+          _buildList: [],
+          _visited: false,
+          _currentState: "",
+          _states: [ "distant-past", "far-past",
+                     "past", "current", "future",
+                     "far-future", "distant-future" ],
+          setState: function(state) {
+            if (typeof state != "string") {
+              state = this._states[state];
+            }
+            if (state == "current" && !this._visited) {
+              this._visited = true;
+              this._makeBuildList();
+            }
+            removeClass(this._node, this._states);
+            addClass(this._node, state);
+            this._currentState = state;
+
+            // delay first auto run. Really wish this were in CSS.
+            /*
+            this._runAutos();
+            */
+            var _t = this;
+            setTimeout(function(){ _t._runAutos(); } , 400);
+          },
+          _makeCounter: function() {
+            if(!this._count || !this._node) { return; }
+            var c = doc.createElement("span");
+            c.innerHTML = this._count;
+            c.className = "counter";
+            this._node.appendChild(c);
+          },
+          _makeBuildList: function() {
+            this._buildList = [];
+            if (disableBuilds) { return; }
+            if (this._node) {
+              this._buildList = query("[data-build] > *", this._node);
+            }
+            this._buildList.forEach(function(el) {
+              addClass(el, "to-build");
+            });
+          },
+          _runAutos: function() {
+            if (this._currentState != "current") {
+              return;
+            }
+            // find the next auto, slice it out of the list, and run it
+            var idx = -1;
+            this._buildList.some(function(n, i) {
+              if (n.hasAttribute("data-auto")) {
+                idx = i;
+                return true;
+              }
+              return false;
+            });
+            if (idx >= 0) {
+              var elem = this._buildList.splice(idx, 1)[0];
+              var transitionEnd = isWK ? "webkitTransitionEnd" : (isFF ? "mozTransitionEnd" : "oTransitionEnd");
+              var _t = this;
+              if (canTransition()) {
+                var l = function(evt) {
+                  elem.parentNode.removeEventListener(transitionEnd, l, false);
+                  _t._runAutos();
+                };
+                elem.parentNode.addEventListener(transitionEnd, l, false);
+                removeClass(elem, "to-build");
+              } else {
+                setTimeout(function() {
+                  removeClass(elem, "to-build");
+                  _t._runAutos();
+                }, 400);
+              }
+            }
+          },
+          buildNext: function() {
+            if (!this._buildList.length) {
+              return false;
+            }
+            removeClass(this._buildList.shift(), "to-build");
+            return true;
+          },
+        };
+
+        //
+        // SlideShow class
+        //
+        var SlideShow = function(slides) {
+          this._slides = (slides||[]).map(function(el, idx) {
+            return new Slide(el, idx);
+          });
+
+          var h = window.location.hash;
+          try {
+            this.current = parseInt(h.split('#slide')[1], 10);
+          }catch (e) { /* squeltch */ }
+          this.current = isNaN(this.current) ? 1 : this.current;
+          var _t = this;
+          doc.addEventListener('keydown', 
+              function(e) { _t.handleKeys(e); }, false);
+          doc.addEventListener('mousewheel', 
+              function(e) { _t.handleWheel(e); }, false);
+          doc.addEventListener('DOMMouseScroll', 
+              function(e) { _t.handleWheel(e); }, false);
+          doc.addEventListener('touchstart', 
+              function(e) { _t.handleTouchStart(e); }, false);
+          doc.addEventListener('touchend', 
+              function(e) { _t.handleTouchEnd(e); }, false);
+          window.addEventListener('popstate', 
+              function(e) { _t.go(e.state); }, false);
+          this._update();
+          
+          // hide those slides we forced to render on load time for positioning purposes
+          [].forEach.call(document.querySelectorAll('.force-render'), function(elem,i){
+            setTimeout(function() {
+              removeClass(elem, 'force-render');
+            }, 2000);
+          });
+        };
+
+        SlideShow.prototype = {
+          _slides: [],
+          _update: function(dontPush) {
+            if (history.pushState) {
+              if (!dontPush) {
+                history.pushState(this.current, "Slide " + this.current, "#slide" + this.current);
+              }
+            } else {
+              window.location.hash = "slide" + this.current;
+            }
+            for (var x = this.current-1; x < this.current+7; x++) {
+              if (this._slides[x-4]) {
+                this._slides[x-4].setState(Math.max(0, x-this.current));
+              }
+            }
+          },
+
+          current: 0,
+          next: function() {
+            if (!this._slides[this.current-1].buildNext()) {
+              this.current = Math.min(this.current+1, this._slides.length);
+              this._update();
+            }
+          },
+          prev: function() {
+            this.current = Math.max(this.current-1, 1);
+            this._update();
+          },
+          go: function(num) {
+            if (history.pushState && this.current != num) {
+              history.replaceState(this.current, "Slide " + this.current, "#slide" + this.current);
+            }
+            this.current = num;
+            this._update(true);
+          },
+
+          _notesOn: false,
+          showNotes: function() {
+            var isOn = this._notesOn = !this._notesOn;
+            query(".notes").forEach(function(el) {
+              el.style.display = (notesOn) ? "block" : "none";
+            });
+          },
+          switch3D: function() {
+            toggleClass(document.body, "three-d");
+          },
+          handleWheel: function(e) {
+            var delta = 0;
+            if (e.wheelDelta) {
+              delta = e.wheelDelta/120;
+              if (isOpera) {
+                delta = -delta;
+              }
+            } else if (e.detail) {
+              delta = -e.detail/3;
+            }
+
+            if (delta > 0 ) {
+              this.prev();
+              return;
+            }
+            if (delta < 0 ) {
+              this.next();
+              return;
+            }
+          },
+          handleKeys: function(e) {
+            
+            if (/^(input|textarea)$/i.test(e.target.nodeName)) return;
+            
+            switch (e.keyCode) {
+              case 37: // left arrow
+                this.prev(); break;
+              case 39: // right arrow
+              case 32: // space
+                this.next(); break;
+              case 50: // 2
+                this.showNotes(); break;
+              case 51: // 3
+                this.switch3D(); break;
+            }
+          },
+          _touchStartX: 0,
+          handleTouchStart: function(e) {
+            this._touchStartX = e.touches[0].pageX;
+          },
+          handleTouchEnd: function(e) {
+            var delta = this._touchStartX - e.changedTouches[0].pageX;
+            var SWIPE_SIZE = 150;
+            if (delta > SWIPE_SIZE) {
+              this.next();
+            } else if (delta< -SWIPE_SIZE) {
+              this.prev();
+            }
+          },
+        };
+
+        // Initialize
+        var slideshow = new SlideShow(query(".slide"));
+      })();
+    </script>
+
+    <!--[if lt IE 9]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">
+    </script>
+		<script>CFInstall.check({ mode: "overlay" });</script>
+    <![endif]-->
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-15028909-5']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>
