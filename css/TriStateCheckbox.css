@@ -1,0 +1,56 @@
+/* 
+ * Tri-state checkbox
+ * TriStateCheckbox.css
+ * Copyright 2010, Steel Underpants Software (Ryan Morlok)
+ * Released under the MIT, BSD, and GPL Licenses.
+ * 
+ */
+a.TriStateCheckbox {
+	background: url(../images/checkboxes.gif) no-repeat 0 -13px;
+	width: 13px;
+	height: 13px;
+	border: none;
+	display: inline-block;
+	overflow: hidden;
+}
+
+a.TriStateCheckbox:hover {
+	background-position: 0 -26px;
+	color: red;
+}
+
+a.TriStateCheckboxDisabled,
+a.TriStateCheckboxDisabled:hover {
+	background-position: 0 0;
+}
+
+a.TriStateCheckboxCheckedDisabled,
+a.TriStateCheckboxCheckedDisabled:hover {
+	background-position: 0 -78px;
+}
+
+a.TriStateCheckboxMixed {
+	background-position: 0 -52px;
+}
+
+a.TriStateCheckboxMixed:hover {
+	background-position: 0 -65px;
+}
+
+a.TriStateCheckboxMixedDisabled,
+a.TriStateCheckboxMixedDisabled:hover {
+	background-position: 0 -39px;
+}
+
+a.TriStateCheckboxChecked {
+	background-position: 0 -91px;
+}
+
+a.TriStateCheckboxChecked:hover {
+	background-position: 0 -104px;
+}
+
+a.TriStateCheckboxCheckedDisabled,
+a.TriStateCheckboxCheckedDisabled:hover {
+	background-position: 0 -78px;
+}

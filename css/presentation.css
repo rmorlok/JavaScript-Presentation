@@ -134,6 +134,10 @@ font-size: 12px;
 display: none;
 }
 
+.citation {
+	font-size:  10pt;
+	font-style: italic;
+}
 .force-render {
 display: block;
 margin-top: -10000px;

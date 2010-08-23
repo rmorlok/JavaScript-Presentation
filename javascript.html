@@ -48,8 +48,9 @@
     <title>HTML5 presentation</title>
     <link href='http://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono' rel='stylesheet' type='text/css' />
     <link href="css/presentation.css" rel="stylesheet" type="text/css" />
-    
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+    <link rel="stylesheet" type='text/css' media='all' href="css/TriStateCheckbox.css" />
+	
+    <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
   </head>
   <body>
     <div class="presentation">
@@ -72,6 +73,7 @@
               <h2>
                 by Ryan Morlok and Sam Slotsky
               </h2>
+              <p>http://morlok.net/JavaScriptPresentation</p>
             </hgroup>
           </section>
         </div>
@@ -131,6 +133,34 @@
 			</section>
 		</div>
 		
+		<div class="slide">
+          <section class="center intro">
+            <hgroup>
+              <h1>Tooling</h1>
+            </hgroup>
+          </section>
+        </div>
+
+		<div class="slide">
+			<header>Tools</header>
+			<section>
+				<ul class="bullets">
+					<li>Firefox: Firebug</li>
+					<li>Webkit (Chrome/Safari): Developer Tools</li>
+					<li><a href="http://jslint.org">jslint.org</a></li>
+					<li>Aptana Studio</li>
+				</ul>
+			</section>
+		</div>
+		
+		<div class="slide">
+          <section class="center intro">
+            <hgroup>
+              <h1>Basics and Gotchas</h1>
+            </hgroup>
+          </section>
+        </div>
+
 		<div class="slide">
 			<header>Variables</header>
 			<section>
@@ -206,9 +236,9 @@ typeof chi; // "number"</pre>
 					<p><tt>||</tt> returns the value of the first operand when it is truthy, otherwise it returns the value of the second operand.</p>
 					<p><tt>&amp;&amp;</tt> returns the value of the second value when the first operand is truthy, otherwise the value of the first operand.</p>
 				<pre>var a = 1 || 0;           // 1
-var d = 0 &amp;&amp; 1;           // 0
-var a = null || "cat";    // "cat"
-var b = "cat" &amp;&amp; "mouse"; // "mouse"</pre>
+var b = 0 &amp;&amp; 1;           // 0
+var c = null || "cat";    // "cat"
+var d = "cat" &amp;&amp; "mouse"; // "mouse"</pre>
 				<p>This technique can create shorthands for dealing with null checks we will see later.</p>
 			</section>
 		</div>
@@ -252,6 +282,14 @@ typeof foo; // "undefined"</pre>
 		</div>
 		
 		<div class="slide">
+          <section class="center intro">
+            <hgroup>
+              <h1>Core Abstractions</h1>
+            </hgroup>
+          </section>
+        </div>
+
+		<div class="slide">
 			<header>Functions</header>
 			<section>
 			<p>Functions are declared using the <tt>function</tt> keyword.</p>
@@ -276,7 +314,7 @@ typeof bar(); // "number"</pre>
 			<section>
 				<p>As JavaScript is a functional programming language, functions values and can be assigned
 					to variables, passed to methods, and anything else that you can do with any other value.</p>
-				<p>When using functions as values, you frequently create annonymous functions, to do this just omit
+				<p>When using functions as values, you frequently create anonymous functions, to do this just omit
 					the name of the function from the previous declaration style.</p>
 <pre>var myFunction = function() {
     alert("hi");
@@ -330,10 +368,99 @@ bar("dog"); // "string, undefined"</pre>
 		</div>
 		
 		<div class="slide">
-			<header></header>
+			<header>Functions with Variable Arguments</header>
 			<section>
+				<p>Regardless of if you defined named parameters, you can access the parameters to
+					a function using the <tt>arguments</tt> variable.</p>
+<pre>function add() {
+    var total = 0;
+    for(var i = 0; i &lt; arguments.length; i++) {
+        total += arguments[i];
+    }
+    return total;
+}
+
+add(1, 2, 3);       // 6
+add(1, 3, 5, 7, 9); // 25</pre>
+				<p>The <tt>arguments</tt> variable provides an array-like interface to the function arguments.
+					This is also a way to check how many arguments were passed to a function. When possible,
+					it is better to use only named parameters.</p>
 			</section>
 		</div>
+		
+		<div class="slide">
+			<header>Closures</header>
+			<section>
+				<p>The term <em>closure</em> is just a fancy term for the idea that a function has access
+					to the variables defined in the scope in which it was created.<p>
+<div id="ClosureCode1">
+<pre>function sayUncle(whoseUncle) {
+    var prefix = whoseUncle + "'s uncle ";
+    return function(name) {
+        return prefix + name;
+    }
+}
+
+var samsUncle = sayUncle("Sam");
+samsUncle("Albert");   // "Sam's uncle Albert"
+samsUncle("Oscar");    // "Sam's uncle Oscar"</pre>
+<img src="images/ClosureCodeAnnotation.png" style="display: none; padding: 0; border: 0; margin: 0;"/>
+<script type="text/javascript">
+$("#ClosureCode1").dblclick(function() {
+	if( $("#ClosureCode1 pre").is(":visible") ) {
+		$("#ClosureCode1 pre").hide();
+		$("#ClosureCode1 img").show();
+	} else {
+		$("#ClosureCode1 pre").show();
+		$("#ClosureCode1 img").hide();
+	}
+});
+</script>
+			<p>Note that the <tt>prefix</tt> variable is referenced from the returned anonymous function.
+				When that annonumous function is executed, that value still holds, even though the execution
+				of the call to <tt>sayUncle</tt> has completed.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Closures - Parent parameters</header>
+			<section>
+				<p>When creating closures you can access anything defined in the parent scope, 
+					(or any scope up the scope chain), including arguments to the parent functions.</p>
+<pre>function addN(n) {
+    return function(val) {
+        return n + val;
+    }
+}
+
+var add5 = addN(5);
+add5(2);  // 7</pre>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Closures - Using vars before defined</header>
+			<section>
+				<p>Note that you can also reference variables that are not defined when you are declaring
+					the function, but are defined prior to the function being executed.</p>
+<pre>function addNPlus2(n) {
+    var tmp = function(val) {
+        return two + n + val;
+    }
+
+    var two = 2;
+
+    return tmp;
+}
+
+var add7 = addNPlus2(5);
+add7(2);  // 9</pre>
+				<p>This is because the closure actually keeps a reference to an object like construct to
+					the parent scope that changes as new variables are defined.</p>
+				<p>Because this type of code can be difficult to follow, avoid doing this when possible.</p>
+			</section>
+		</div>
+		
 		<div class="slide">
 			<header>Exercise: Create a counter function</header>
 			<section>
@@ -354,10 +481,265 @@ alert(counter()); // 2</pre>
 		</div>
 		
 		<div class="slide">
+			<header>Objects</header>
+			<section>
+				<p>In JavaScript, the following are literals:</p>
+				<ul class="bullets small">
+					<li>strings</li>
+					<li>numbers</li>
+					<li>booleans</li>
+					<li><tt>null</tt></li>
+					<li><tt>undefined</tt></li>
+				</ul>
+				<p>Everything else is an object.</p>
+				<p>Objects are mutable keyed collections. Numbers, strings and booleans are object-like
+					in that they have methods, but they are not mutable.*</p>
+				<p>Functions are objects as well. This means that functions can have properties and methods, as strange as that sounds.</p>
+				<p class="citation">* <a href="http://www.amazon.com/JavaScript-Good-Parts-Douglas-Crockford/dp/0596517742">JavaScript: 
+				The Good Parts</a> by Douglas Crockford</p>
+			</section>
+		</div>
+	
+		<div class="slide">
+			<header>Creating Objects</header>
+			<section>
+				<p>Two ways to create objects:</p>
+				<ul class= "bullets medium">
+					<li>Object Literals</li>
+					<li><tt>new</tt> keyword with constructor function</li>
+				</ul>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Object literals</header>
+			<section>
+				<p>To creat object literals, use the following notation:</p>
+<pre>var myObject = {
+    property1: "xyz",
+    "property2": 123
+};</pre>
+				<p>Note that object properties may optionally quoted (required if using a reserved keyword, spaces, etc.).
+					The values for the property may be any value in JavaScript. The definitions of each property are separated
+					by commas.</p>
+			
+				<p>Because object literals are just expressions, you may nest them to create entire object trees.</p>
+<pre>var nested = {
+    id: 321,
+    otherObject: {
+        a: 1,
+        b: 2
+    }
+}</pre>
+			<p>Notice the similarity to the JSON data format. Hence, 
+				<span style="text-decoration: underline;">J</span>ava<span style="text-decoration: underline;">S</span>cript <span style="text-decoration: underline;">O</span>bject <span style="text-decoration: underline;">N</span>otation.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Dynamically Mutable Keyed Collections</header>
+			<section>
+				<p>Properties in objects can be accessed a dotted notation as in Java/C#, or using
+					a bracket notation similar to associative arrays.</p>
+<pre>var myObject = { ... };
+myObject.foo = "something";
+myObject["foo"]                     // "something"
+delete myObject.foo;
+myObject["foo"]                     // undefined
+
+myObject["bar"] = "something else";
+myObject.bar                        // "something else"
+delete myObject["bar"];
+myObject.bar                        // undefined</pre>
+				<p>To create a property, assign a value to it. Use the <tt>delete</tt> keyword to remove
+					the property.</p>
+				<p>Properties can be added to an object at any time.  Note that you must use the bracket
+					notation when the property in question is a reserved word in JavaScript.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Methods</header>
+			<section>
+				<p>Creating methods is as simple as assigning a function to a property.  Remember, functions are just values
+					so you can assign them the same as you would any other value.</p>
+				<p>Explicitly assigning values:</p>
+<pre>var person = {};
+person.sayHi = function(name) {
+    alert("Hi " + name + "!");
+};
+
+person.sayHi("Bob"); // "Hi Bob!"</pre>
+			<p>Alertnatively, you can define methods inline with the object literal notation:</p>
+<pre>var person = {
+    sayHi: function(name) {
+        alert("Hi " + name + "!");
+    }
+};
+
+person.sayHi("Cindy"); // "Hi Cindy!"</pre>
+			<p>Often, when writing methods, you will need to access other properties/methods of the object on which you are invoked using the
+				<tt>this</tt> keyword.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header><tt>this</tt></header>
+			<section>
+				<p>The JavaScript keyword <tt>this</tt> allows a method to access other properties/methods of the object on which it is invoked.</tt>
+<pre>var billy = {
+    name: "Billy",
+	
+    sayName: function() {
+        alert("I'm " + this.name + "!");
+    }
+};
+
+billy.sayName(); // "I'm Billy!"</pre>
+				<p>When a function is executed standalone (with no object context) <tt>this</tt> points to the global object (<tt>window</tt>).</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Constructor Function</header>
+			<section>
+				<p>Constructor functions are the second way of creating new objects. When constructor function is called using the <tt>new</tt>
+					keyword, a new object is automatically created and assigned the the variable <tt>this</tt>.  A hidden reference to the prototype
+					of the constructor function exists on the created object, and a direct reference to the constructor function exists in the 
+					<tt>constructor</tt> property.</p>
+				<p>Constructor functions can also take parameters, which can be used in the initialization of the new object.</p>
+<pre>
+function Person(name) {
+    this.name = name;
+    this.sayName = function() {
+        alert("I'm " + this.name + "!");
+    };
+};
+
+var billy = new Person("Billy");
+billy.sayName(); // "I'm Billy!"
+billy.constructor === Person; // true</pre>
+			<p>By convention, constructor functions are capitalized, while normal functions begin with a lower-case letter.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Prototype-based Inheritence</header>
+			<section>
+				<ul class="bullets medium">
+					<li>Prototype-based inheritance means that objects inherit directly from other objects</li>
+					<li>JavaScript employs a bastardization of prototype inheritance by inserting the concept of a 
+					constructor function between the objects between which inherance is happening</li>
+					<li>The constructor function has a <tt>prototype</tt> property that points to an object that will serve
+					as the prototype for all objects created by that constructor function</li>
+					<li>The created objects have a property <tt>constructor</tt> which points to constructor function which
+					created the object. The object does not inherit from the constructor function, however, but rather from
+					the constructor function's <tt>prototype</tt>.</li>
+				</ul>
+
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>How to do Prototype-based Inheritence</header>
+			<section>
+				<ul class="bullets medium">
+					<li>Create a constructor function</li>
+					<li>Set the <tt>prototype</tt> property of the constructor function to point to 
+					an instance of an object you want to inherit from</li>
+					<li>Some frameworks, such as Microsoft AJAX.NET provide APIs for simulating 
+					classical object oriented inheritance.</li>					
+				</ul>
+
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Prototype-based Inheritence Example</header>
+			<section>
+<pre>function A() {
+    this.primeNumber = 37;
+    this.sayPrime = function() {
+        alert("My prime: " + this.primeNumber);
+    };
+}
+
+function B() {
+    this.primeNumber = 7;
+}
+B.prototype = new A();
+
+var b = new B();
+b.sayPrime(); // "My prime: 7"</pre>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Prototype-based Inheritence Example</header>
+			<section>
+			<img src="images/JavaScriptProtoTypeInheritance.png" style="display: block; margin: auto; border: 3px #aac solid;"/>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Prototype-based Inheritence Example</header>
+			<section>
+				<ul class="bullets medium">
+					<li>As you can see in the previous slide, the constructor functions add an unnecessary layer to the chain.</li>
+					<li>The <tt>__proto__</tt> property is a Mozilla-specific (non-standard) property to directly access an object's prototype.</li>
+					<li>Prototype inheritance with constructor functions is confusing. It can be simplified by adding "helper" factory methods 
+					and avoiding <tt>new</tt>/constructor functions.  We won't get into those details in this presentation.</tt>
+				</ul>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Manipulating <tt>prototype</tt> directly</header>
+			<section>
+				<p>Unless you assign it differently, a constructor function's <tt>prototype</tt> property points
+				to an instance of <tt>Object</tt>. You can add properties directly on to this object that will be
+				available on all instances created by the constructor function.
+<pre>function Person(name) {
+    this.name = name;
+}
+
+Person.prototype.sayName = function() {
+    alert("I'm " + this.name + ".");
+};
+
+var bobby = new Person("Bobby");
+bobby.sayName(); // "I'm Bobby."</pre>
+				<p>This avoids having a separate value for a method on each instance of an object.  Instead all objects created from <tt>Person</tt>
+				share the same method.  This can save memory and speed up the time it takes for the constructor function to execute.</tt>
+				<p>You can also manipulate a prototype after objects have been created that reference it. This means that all existing objects that use that prototype will receive the changes.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Exercise - Adding a method to arrays</header>
+			<section>
+				<p>Add a method <tt>sum()</tt> to all arrays that will return the sum of all numbers in the array. You may assume
+					that the method will only be invoked on arrays that only have numbers.</p>
+				<p>Example:</p>
+				<pre>alert([1, 2, 3].sum()); // 6</pre>
+				<p><em>HINT: The constructor function for all JavaScript arrays is <tt>Array</tt></em></p>
+				<p>Implement your solution here: <a href="http://jsfiddle.net/AC8Yp/1/">http://jsfiddle.net/AC8Yp/1/</a></p>
+			</section>
+		</div>
+		
+		<div class="slide">
+          <section class="center intro">
+            <hgroup>
+              <h1>Best Practices</h1>
+            </hgroup>
+          </section>
+        </div>
+
+		<div class="slide">
 			<header>Avoid Cluttering the Global Namespace</header>
 			<section>
 				<p>Because variables have function scope, we can avoid putting things in the global
-					scrope by using an annonymous function. The function is created then immediately executed</p>
+					scrope by using an anonymous function. The function is created then immediately executed</p>
 <pre>(function(window, document, $) {
 	
     var thisIsNotGlobal = "abc";
@@ -368,7 +750,7 @@ alert(counter()); // 2</pre>
 
 })(window, document, jQuery);</pre>
 			<p>From this "hidden" scope we can intentially insert items into the global scope by adding properties to <tt>window</tt></p>
-			<p>Note that references of <tt>window</tt>, <tt>document</tt>, <tt>jQuery</tt>, etc can be passed into the annonymous function. 
+			<p>Note that references of <tt>window</tt>, <tt>document</tt>, <tt>jQuery</tt>, etc can be passed into the anonymous function. 
 				This gaurds against name collions (allowing us to safely use the <tt>$</tt> jQuery shorthand), and avoids
 				variable lookup into the gloabl scope for a performance boost.</p>
 			</section>
@@ -386,82 +768,301 @@ if( typeof Westlaw.WLB === "undefined" ) {
 	Westlaw.WLB = {};
 }
 
-Westlaw.WLB.Exampe = {
+Westlaw.WLB.Example = {
 	...
 }</pre>
 				<p>The <tt>if</tt> if statements are to check if the namespace has already been started by another js file.  
 					This avoids clobbering existing objects in the namespace. Note that all that is being done here is create
-					generic objects and populate them with sub-objects and functions.</pre>
+					generic objects and populate them with sub-objects and functions.</p>
+				<p>Note that at the outermost level you may have a constructor function instead of an object.</p>
 			</section>
 		</div>
 		
 		<div class="slide">
-			<header></header>
+			<header>Checking if Properties Exist</header>
 			<section>
+				<p>A common mistake is to reference a sub-object's property when the object does not exist. E.g. <tt>foo.bar.baz</tt> when <tt>bar</tt>
+				is either <tt>undefined</tt> or <tt>null</tt>.</p>
+				<p>Using if statements with short-circuit evaluation is a common practice that is also used in Java/C#, however if you just want
+				a value, the formal definition of the <tt>&amp;&amp;</tt> can help:</p>
+<pre>var getMeTheValue = foo &amp;&amp; foo.bar &amp;&amp; foo.bar.baz;</pre>
+				<p>This way if either <tt>foo</tt> or <tt>foo.bar</tt> are <tt>null</tt> or <tt>undefined</tt>, <tt>getMeThatValue</tt> will receive
+				that value. If both <tt>foo</tt> and <tt>foo.bar</tt> exist, then <tt>getMeThatValue</tt> will be assigned the value of <tt>foo.bar.baz</tt>.
 			</section>
 		</div>
 		
 		<div class="slide">
-			<header>JavaScript Widgets</header>
+			<header>Options object</header>
 			<section>
+				<p>When a function takes more than a few parameters, it can be hard to remember which parameter is which.  This can also lead to errors because of JavaScript lack of compile time type checking. In these circumstances, one can use a single "options" object to pass in the parameters.  JavaScript's object literal notation then lets the caller annotate the arguments.</p>
+<pre>function takesLotsOfParameters(options) { ... }
+
+takesLotsOfParameters({
+    height: 60,
+    weight: 130,
+    eyeColor: "blue"
+});</pre>
+			<p>With the options object, the order of the parameters doesn't matter, and it can make the code more readable.</p>
 			</section>
 		</div>
 		
 		<div class="slide">
-			<header>Example Widget</header>
+			<header>Options object</header>
 			<section>
-				<pre>var map = {};
-map.numbers = { name: "numbers", value: "numbers", list: [1, 2, 3] };
-map.letters = { name: "letters", value: "letters", list: ["a", "b", "c"] };
-var dependentDropdown 
-    = new Example.DependentDropdown(
-		$(".examplewidget #placeholder"), 
-		"Select1Id", 
-		"Select2Id", 
-		"Select 1 Label", 
-		"Select 2 Label", 
-		map);</pre>
-				<style type="text/css">
-				.examplewidget h1 {
-					font-size: 16px;
-					font-weight: bold;
-					font-family: arial, sans-serif;
-				}
-				.examplewidget label {
-					font-size: 14px;
-				}
-				.examplewidget.wrapper {
-					background: -webkit-gradient(linear, left bottom, left top, from(#bbf), to(#ddf));
-					background: -moz-linear-gradient(bottom, #bbf, #fdf);
-					background: linear-gradient(bottom, #bbf, #fdf);
-					border: 1px solid rgba(0, 0, 255, 0.3);
-					-moz-border-radius: 8px; 
-					-webkit-border-radius: 8px;
-					padding: 8px;
-					width: 300px;
-					margin-right: auto;
-					margin-left: auto;
-					margin-top: 10px;
-					margin-bottom: 10px;
-					text-align: center;
-				}
-				.examplewidget #placeholder {
-					margin-left: auto;
-					margin-right: auto;
-					margin-top: 5px;
-					margin-bottom: 5px;
-				}
-				</style>
-				<div class="examplewidget wrapper"><h1>Dependent Dropdown Widget</h1><div id="placeholder"></div></div>
-				<script type="text/javascript" src="js/DependentDropdown.js"></script>
-				<script type="text/javascript">
-					var map = {};
-					map.numbers = { name: "numbers", value: "numbers", list: [1, 2, 3] };
-					map.letters = { name: "letters", value: "letters", list: ["a", "b", "c"] };
-					var dependentDropdown = new Example.DependentDropdown($(".examplewidget #placeholder"), "Select1Id", "Select2Id", "Select 1 Label", "Select 2 Label", map);
-				</script>
+				<p>The downside of the options object is the call is rather free-form from the callers perspective, you must document the possible
+				properties on the options object.</p>
+				<p>One way to make the call even easier for your user is to provide default values for some of the parameters.  This can be done using the jQuery <tt>$.extend(...)</tt> method.  The <tt>$.extend(...)</tt> method takes a sequence of objects.  Objects to the right have higher precedence for overwriting a property.  Properties that are not overwritten, show through to the final object:</p> 
+<pre>var options = { a: 1, c: 3};
+var finalOptions 
+    = $.extend({a:99, b:22, c:55}, options); // { a: 1, b:22, c: 3}</pre>
+			<p>The first parameter to <tt>$.extend(...)</tt> would be the "defaults" you want to provide.  You would then pass the options object
+			the caller supplied, which would overwrite properties for any they had supplied.</p>
+			<p>This technique is especially common in jQuery plugins.</p>
 			</section>
 		</div>
+		
+		<div class="slide">
+			<header>Pitfalls of <tt>this</tt></header>
+			<section>
+				<p>Coming from "classical" object oriented languages, the concept of <tt>this</tt> may seem simple.  There are some hidden gotchas
+					in JavaScript that make it worthwhile to look for alternative ways of doing things when possible.</p>
+				<p>Problem with <tt>this</tt> include:</p>
+				<ul class="bullets medium">
+					<li>Does not always point to the object you expect</li>
+					<li>Can lead to clobbering elements in the global namespace</li>
+					<li>Does not allow for information hiding</li>
+				</ul>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Guess what <tt>this</tt> points to!</header>
+			<section>
+<pre>&lt;div id="clickme"&gt;Click me!&lt;/div&gt;
+
+function MyObject() {
+	
+    this.myVal = "unclicked";
+	
+    $("#clickme").click(function() {
+        this.myVal = "clicked";
+    });
+	
+    return this;
+}
+
+var anObject = new MyObject();
+...
+alert(anObject.myVal);</pre>
+			<p>Assume you click the "Click Me!" prior to the alert being executed.  What is the value of <tt>anObject.myVal?</tt></p>
+			<p id="clickforanwser1"><a href="javascript:void();">Click for answer</a></p>
+			<p id="answer1" style="display: none;"><tt>anObject.myVal</tt>'s value is "unclicked". In the context of the click event 
+			handler, <tt>this</tt> is rebound to the element that triggered the event. This means that the DOM element has a property <tt>myVal</tt> with the value of "clicked".</p>
+			<script type="text/javascript">
+			$("#clickforanwser1").click(function() {
+				$("#clickforanwser1").hide();
+				$("#answer1").slideDown("slow");
+			});
+			</script>
+			</section>
+		</div>
+
+		<div class="slide">
+			<header>Rebinding <tt>this</tt></header>
+			<section>
+			<p><tt>this</tt> can be rebound to an arbitrary object using the <tt>call(...)</tt> method on a function object. This include functions
+			that are being used as methods on a different object.</p>
+<pre>var obj = {};
+
+function fun() {
+    alert(obj === this);
+}
+
+fun.call(obj); // true</pre>
+			<p>The first parameter to the <tt>call(...)</tt> method is the object which will act as <tt>this</tt> in the function. All other
+			parameters are passed along to the function as parameters.</p>
+			</section>
+		</div>
+		
+		
+		<div class="slide">
+			<header>Guess what <tt>this</tt> points to!</header>
+			<section>
+<pre>var myObject = {
+    myVal: 2,
+    setVal: function(newVal) {
+        this.myVal = newVal;
+    }
+};
+
+var setVal = myObject.setVal;
+setVal(321);
+alert(myObject.myVal);</pre>
+			<p>What is the value of <tt>myObject.myVal</tt>?</p>
+			<p id="clickforanwser2"><a href="javascript:void();">Click for answer</a></p>
+			<p id="answer2" style="display: none;"><tt>anObject.myVal</tt>'s value is 2. When a function is not invoked as a method, <tt>this</tt> points to <tt>window</tt>.This means that the global object (<tt>window</tt>) has a property <tt>myVal</tt> with the value of 321. You have just polluted the global namespace.</p>
+			<script type="text/javascript">
+			$("#clickforanwser2").click(function() {
+				$("#clickforanwser2").hide();
+				$("#answer2").slideDown("slow");
+			});
+			</script>
+			</section>
+		</div>
+
+<div class="slide">
+			<header>Guess what <tt>this</tt> points to!</header>
+			<section>
+<pre>function MyObject() {
+    this.myProperty = "xyz";
+	
+	this.myMethod = function() { alert("hi!"); };
+	
+	return this;
+}
+
+var anObject = MyObject();</pre>
+			<p>What's wrong with the above code?</p>
+			<p id="clickforanwser3"><a href="javascript:void();">Click for answer</a></p>
+			<p id="answer3" style="display: none;"><tt>MyObject</tt> is intended as a constructor function, but the caller forgot
+			the <tt>new</tt> keyword.  Because of this, <tt>this</tt> was bound to the global object (<tt>window</tt>) and it clobbered
+			a couple properties (or at least added some unwanted ones). Despite being intended as a constructor function (first letter capitalized)
+			there is no way to force it to be used as such.</p>
+			<script type="text/javascript">
+			$("#clickforanwser3").click(function() {
+				$("#clickforanwser3").hide();
+				$("#answer3").slideDown("slow");
+			});
+			</script>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Information Hiding</header>
+			<section>
+			<p>JavaScript has no concept of private or protected.  All properties on an object can be changed by
+			anyone with a reference to that object.</p>
+<pre>function Car() {
+    this.locked = true;
+	
+    this.unlock = function(password) {
+        if( password === "abc" ) {
+            this.locked = false;
+        }
+    };
+	
+    return this;
+}
+
+var ford = new Car();
+
+// Break in to the car!
+ford.locked = false;</pre>
+			<p>The <tt>unlock(...)</tt> method is intended to guard the state of the object, but anyone can change any property.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Information Hiding</header>
+			<section>
+			<p>Another problem with this approach is consumers of the object don't have a clear definition of what's supposed to be public and
+			what's not.  A solution to this is to indicte "private" data by prefixing the property name with an underscore (e.g. <tt>_locked</tt>).
+			This, of courese, does not solve the problem of preventing access.</p>
+			</section>
+		</div>
+
+		<div class="slide">
+			<header>Avoiding <tt>this</tt> with closures</header>
+			<section>
+			<p>All of these problems can be avoided by using closures to hide data and define a separate "this" object. I usually call it "me".</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Avoiding <tt>this</tt> with closures</header>
+			<section>
+<pre>function Car() {
+    // The new "this" object
+    var me = {};
+	
+    // Private data
+    var locked = true;
+	
+    // Private function
+    function checkPassword(password) { 
+        return password === "abc";
+    }
+	
+    // Public function
+    me.unlock = function(password) {
+        if( checkPassword(password) ) {
+            locked = false;
+        }
+    };
+	
+    return me;
+}
+
+var ford = new Car();
+
+// Break in to the car! (good luck with that...)
+ford.locked = false;  // FAIL!</pre>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Avoiding <tt>this</tt> with closures</header>
+			<section>
+			<p>The solution on the previous slide has the following benefits:</p>
+			<ul class="bullets small">
+				<li>The <tt>locked</tt> variable is safely hidden away and cannot be changed by anything other than
+				methods defined in <tt>Car</tt>. <tt>checkPassword</tt> is also private.</li>
+				<li>While the <tt>unlock</tt> method could be swapped out for a different function, the new version would not 
+				have access to <tt>locked</tt></li>
+				<li>If <tt>unlock</tt> is invoked in a way that is decoupled from it's object, it will still work as expected.</li>
+				<li>If the consumer forgets to use <tt>new</tt> when calling the constructor function, it doesn't matter because the
+				function just creates its own object an returns that anyway. The gloabl namespace is protected.</li>
+				<li>As long as the code uses "me" that variable will always refer to the correct object even in event handlers, etc.</li>
+			</ul>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Avoiding <tt>this</tt> with closures</header>
+			<section>
+			<p>While the previous approach fixes many problems it does introduct a couple new ones:</p>
+			<ul class="bullets small">
+				<li>Because <tt>this</tt> is ignored, the returned object does not actually use the prototype chain defined for it's constructor function.</li>
+				<li>Likewise, modifying <tt>Car.prototype</tt> will not affect objects created by the constructor.</li>
+			</ul>
+			<p>Both of the above problems can be corrected by sacrificing safety against a missing <tt>new</tt> and doing the following:</p>
+			<pre>var me = this</pre>
+			<p>The idea of using a closure for data hiding and avoiding the actual object referenced by <tt>this</tt> are two separate ideas.  This approach uses the closure to maintiain a predictable reference to the object, while still behaving normally as a constructor function.</p>
+		</div>
+		
+		<div class="slide">
+			<header>Exercise - Bidirectional counter object</header>
+			<section>
+			<p>Implement a counter object that supports the following methods:</p>
+			<ul class="bullets small">
+				<li><tt>increment()</tt> - add one to the current value</li>
+				<li><tt>decrement()</tt> - subtract one from the current value</li>
+				<li><tt>getValue()</tt> - get the current value</li>
+			</ul>
+			<p>Implement the object so that there is a constructor function <tt>Counter</tt> and actual
+				counter variable will be held privately by the object.</p>
+			<img src="images/BidirectionalCounterScreenshot.png" alt="widget screenshot" style="display: block; margin-left: auto; margin-right: auto;"/>
+			<p>Implement your solution here: <a href="http://jsfiddle.net/JwnY3/2/">http://jsfiddle.net/JwnY3/2/</a>
+		</div>
+				
+		<div class="slide">
+          <section class="center intro">
+            <hgroup>
+              <h1>Web Services &amp; DOM</h1>
+            </hgroup>
+          </section>
+        </div>
+		
 		<div class="slide">
 			<header>Web Service Calls</header>
 			<section>
@@ -533,6 +1134,245 @@ Example.Services.MyWebService(param1, param2, onSuccess, onFailure);</pre>
 		</div>
 		
 		<div class="slide">
+			<header>jQuery 30,000 ft Overview</header>
+			<section>
+				<p>jQuery is a JavaScript library that make the DOM API much more usable and abstracts away many inconsistencies between browsers.</p>
+				<p>Selectors:</p>
+				<ul class="bullets medium">
+					<li>Classname - $(‘.Foo’)</li>
+					<li>Tag - $(‘a’)</li>
+					<li>ID - $(‘#bar’)</li>
+					<li>Context - $(‘.CompanySearchCriteria h2’)</li>
+					<li>Attribute - $(‘a[name=Baz]’)</li>
+				</ul>
+				<p>Lots of great jQuery tutorials on the web.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Dynamically Creating DOM Elements</header>
+			<section>
+				<p>Oftentimes a JavaScript widget will be responsible for dynamically updating the DOM, and this may require adding new elements. This can be done
+					using a combination of the DOM API and jQuery</p>
+<pre>// Assume parent element you want to add a div under is id 'Foo'
+var myDiv = $(document.createElement('div'))
+                    .attr('id', 'mynewdiv')
+                    .addClass('myclass')
+                    .bind('click', function(event) { ... });
+$("#Foo").append(myDiv);</pre>
+				<p>If you will need to access the created element again, it's a good idea to keep a reference to it.  This avoids jQuery unneed jQuery selectors which are orders of
+					magnitude slower than direct references.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+          <section class="center intro">
+            <hgroup>
+              <h1>JavaScript Widgets</h1>
+            </hgroup>
+          </section>
+        </div>
+		
+		<div class="slide">
+			<header>What are JavScript widgets? (take 2)</header>
+			<section>
+				<p>JavaScript widgets are really just JavaScript objects that happen to be providing an logical abstraction layer on top of the
+					HTML DOM. Oftentimes the objects you create will expose events and properties to make them behave in ways similar to native HTML widgets.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Example Widget - TriStateCheckbox</header>
+			<section>
+			<p>The TriStateCheck box presents three possible states to the user: checked, unchecked, and partially checked.  This type of checkbox is normally used with tree data.</p>
+<style type="text/css"> 
+		.demo { color: #888; font-family: verdana,helvetica,arial,sans-serif; font-size: 10pt;}
+		.demo ul { list-style: none; margin-top: 5px;}
+	</style>
+	<div class="demo"> 
+		<span id="enabled"></span> Enabled
+		<br /><br /> 
+		<ul> 
+			<li> 
+				<span id="a1"></span> Dog
+				<ul> 
+					<li><span id="a11"></span> Golden Retriever</li> 
+					<li><span id="a12"></span> Cocker Spanial</li> 
+				</ul> 
+			</li> 
+			<li> 
+				<span id="a2"></span> Cat
+				<ul> 
+					<li><span id="a21"></span> Tabby</li> 
+					<li><span id="a22"></span> Calico</li> 
+				</ul> 
+			</li> 
+		</ul> 
+	</div>
+	<script type="text/javascript" src="js/TriStateCheckbox.js"></script> 
+	<script type="text/javascript"> 
+		var enabled = new SteelUnderpants.TriStateCheckbox({enabled: true, checked: true, tabIndex: 1});
+		var a1 = new SteelUnderpants.TriStateCheckbox({enabled: true, checked: false, tabIndex: 2});
+		var a2 = new SteelUnderpants.TriStateCheckbox({enabled: true, checked: false, tabIndex: 3});
+		var a11 = new SteelUnderpants.TriStateCheckbox({enabled: true, checked: false, tabIndex: 4});
+		var a12 = new SteelUnderpants.TriStateCheckbox({enabled: true, checked: false, tabIndex: 5});
+		var a21 = new SteelUnderpants.TriStateCheckbox({enabled: true, checked: false, tabIndex: 6});
+		var a22 = new SteelUnderpants.TriStateCheckbox({enabled: true, checked: false, tabIndex: 7});
+		
+		var treeCheckboxes = [a1, a2, a11, a12, a21, a22];
+		
+		$(enabled).bind("checked", function() {
+			$(treeCheckboxes).each(function() {
+				this.enabled(enabled.checked());
+			})
+		})
+		
+		$(a1).bind("checked", function() {
+			var checked = this.checked();
+			if( checked != "mixed" ) {
+				$([a11, a12]).each(function() {
+					this.checked(checked);
+				});
+			}
+		});
+		
+		$(a2).bind("checked", function() {
+			var checked = this.checked();
+			if( checked != "mixed" ) {
+				$([a21, a22]).each(function() {
+					this.checked(checked);
+				});
+			}
+		});
+		
+		$([a11, a12]).bind("checked", function() {
+			var checkedCount = 0;
+			$([a11, a12]).each(function() {
+				if( this.checked() )
+					checkedCount++;
+			});
+			
+			switch(checkedCount) {
+				case 0: a1.checked(false); break;
+				case 1: a1.checked("mixed"); break;
+				case 2: a1.checked(true); break;
+			}
+		});
+		
+		$([a21, a22]).bind("checked", function() {
+			var checkedCount = 0;
+			$([a21, a22]).each(function() {
+				if( this.checked() )
+					checkedCount++;
+			});
+			
+			switch(checkedCount) {
+				case 0: a2.checked(false); break;
+				case 1: a2.checked("mixed"); break;
+				case 2: a2.checked(true); break;
+			}
+		});
+		$("#enabled").append(enabled);
+		$("#a1").append(a1);
+		$("#a2").append(a2);
+		$("#a11").append(a11);
+		$("#a12").append(a12);
+		$("#a21").append(a21);
+		$("#a22").append(a22);
+	</script>
+				<p>The checkboxes are implemented as div tags which are styled with background images to look like checkboxes.</p>
+				<p>Source code available here: <a href="http://github.com/rmorlok/TriStateCheckbox/blob/master/js/TriStateCheckbox.js">http://bit.ly/cgD27P</a></p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Example Widget - Dependent DropDown</header>
+			<section>
+				<pre>var map = {};
+map.numbers = { name: "numbers", value: "numbers", list: [1, 2, 3] };
+map.letters = { name: "letters", value: "letters", list: ["a", "b", "c"] };
+var dependentDropdown 
+    = new Example.DependentDropdown(
+		$(".examplewidget #placeholder"), 
+		"Select1Id", 
+		"Select2Id", 
+		"Select 1 Label", 
+		"Select 2 Label", 
+		map);</pre>
+				<style type="text/css">
+				.examplewidget h1 {
+					font-size: 16px;
+					font-weight: bold;
+					font-family: arial, sans-serif;
+				}
+				.examplewidget label {
+					font-size: 14px;
+				}
+				.examplewidget.wrapper {
+					background: -webkit-gradient(linear, left bottom, left top, from(#bbf), to(#ddf));
+					background: -moz-linear-gradient(bottom, #bbf, #fdf);
+					background: linear-gradient(bottom, #bbf, #fdf);
+					border: 1px solid rgba(0, 0, 255, 0.3);
+					-moz-border-radius: 8px; 
+					-webkit-border-radius: 8px;
+					padding: 8px;
+					width: 300px;
+					margin-right: auto;
+					margin-left: auto;
+					margin-top: 10px;
+					margin-bottom: 10px;
+					text-align: center;
+				}
+				.examplewidget #placeholder {
+					margin-left: auto;
+					margin-right: auto;
+					margin-top: 5px;
+					margin-bottom: 5px;
+				}
+				</style>
+				<div class="examplewidget wrapper"><h1>Dependent Dropdown Widget</h1><div id="placeholder"></div></div>
+				<script type="text/javascript" src="js/DependentDropdown.js"></script>
+				<script type="text/javascript">
+					var map = {};
+					map.numbers = { name: "numbers", value: "numbers", list: [1, 2, 3] };
+					map.letters = { name: "letters", value: "letters", list: ["a", "b", "c"] };
+					var dependentDropdown = new Example.DependentDropdown($(".examplewidget #placeholder"), "Select1Id", "Select2Id", "Select 1 Label", "Select 2 Label", map);
+				</script>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Exercise - Modify D. Dropdown Widget</header>
+			<section>
+				<p>Modify the dependent dropdown widget so that when you select a value from the second dropdown, an alert message comes up saying “You have selected option [value]”.</p>
+				<p>Please complete the work here: <a href="http://jsfiddle.net/4BATs/">http://jsfiddle.net/4BATs/</a></p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Hooking Up a Widget</header>
+			<section>
+				<p>When you create a widget object, you need some way to attach it to the DOM. The most common way is to use a placeholder
+					element that already exists in the DOM and put it inside that element.</p>
+				<p>Techiques can vary.  Some widgets accept the ID of a the placeholder element, some widgets will accept the DOM object itself.
+					Widgets that use jQuery will often accept a jQuery object or a selector to get find the placeholder.</p>
+				<p>In the previous example, the widget took a jQuery object as the point of attachment into the DOM.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Wrapping a Widget in WAF</header>
+			<section>
+				<p>When creating a a JavaScript widget within WAF, it is best to wrap the widget in a server control that can handle
+				creating the widget on the page.  The server control registers the needed JavaScript files with the BasePage's script manager,
+				and then renders down raw JavaScript code in <tt>&lt;script ...&gt;</tt> tags to actually cause the widget to 
+				work on the resulting webpage.</p>
+				<p>The server control will typically provide .NET properties that will then be translated down to the rendered JavaScript to configure
+				the widget. The server control can also render localized versions of needed strings (see <tt>JavaScriptResourceCollection</tt>, as WAF does not have client-side localization framework.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
 			<header>Excercise: Create a JavaScript Widget</header>
 			<section>
 				<p>Create a JavaScript widget that displays a colored box to the user.  The widget should expose a method <tt>toggleColor()</tt> 
@@ -549,6 +1389,29 @@ Example.Services.MyWebService(param1, param2, onSuccess, onFailure);</pre>
 				When the box is red it should have the <tt>Red</tt> class. When the box is blue is should have the <tt>Blue</tt> class.</p>
 				
 				<p>Implement your widget here: <a href="http://jsfiddle.net/4EeHN/2/">http://jsfiddle.net/4EeHN/1/</a>.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Widget Events</header>
+			<section>
+				<p>Because widgets act as logical extractions on the DOM, they will typically expose events that other code can observe.
+					For example, the checkbox widget exposed checked changed events, as well as enabled/disabled events.</p>
+				<p>There are a few ways widgets can expose these events.<p>
+				<p>First, they can simply accept configuration parameters or expose properties to callback functions. The downside of
+					this approach is only one object can listen to events on the widget.</p>
+				<p>Another approach is to expose equivalent of subscribe/unsubscribe methods.  It is possible to piggyback on top of jQuery's
+					event framework to do this.</p>
+				<p>A third option, as seen in Cobalt, is to have an event hub library that allows for a pub/sub model.  This means widgets will
+					fire events with known ids, and listen for any events they know how to handle.  The downside to this approach is the system
+					can get rather chatty if fine grained events are being sent through the hub.</p>
+				<p>The correct approach depends on your situation.</p>
+			</section>
+		</div>
+		
+		<div class="slide">
+			<header>Look at Source Code for Cobalt Widget</header>
+			<section>
 			</section>
 		</div>
 		
@@ -570,6 +1433,7 @@ Example.Services.MyWebService(param1, param2, onSuccess, onFailure);</pre>
 			<ul class="bullets small">
 				<li><a href="http://www.youtube.com/watch?v=hQVTIJBZook">Douglas Crockford: JavaScript the Good Parts</a></li>
 				<li><a href="http://www.youtube.com/watch?v=mHtdZgou0qU">Nicholas Zakas: JavaScript Performance Issues</a></li>
+				<li><a href="http://developer.yahoo.com/yui/theater/">YUI Theater</a></li>
 			</ul>
 			</section>
 		</div>
@@ -580,6 +1444,9 @@ Example.Services.MyWebService(param1, param2, onSuccess, onFailure);</pre>
 				<p>Solutions to the exercises in this presentation can be found at the links below.</p>
 				<ul class="bullets medium">
 					<li><a href="http://jsfiddle.net/GYW3n/6/">Counter</a></li>
+					<li><a href="http://jsfiddle.net/WwXhr/1/">Add <tt>sum()</tt> method to arrays</a></li>
+					<li><a href="http://jsfiddle.net/R5SZA/1/">Bidirectional Counter</a></li>
+					<li><a href="http://jsfiddle.net/SYrJQ/1/">Modify Dependent Dropdown Widget</a></li>
 					<li><a href="http://jsfiddle.net/JpxZA/20/">RedBlue Widget</a></li>
 				</ul>
 			</section>
