@@ -1345,7 +1345,43 @@ var dependentDropdown
 			<header>Exercise - Modify D. Dropdown Widget</header>
 			<section>
 				<p>Modify the dependent dropdown widget so that when you select a value from the second dropdown, an alert message comes up saying “You have selected option [value]”.</p>
-				<p>Please complete the work here: <a href="http://jsfiddle.net/4BATs/">http://jsfiddle.net/4BATs/</a></p>
+				<p>Please complete the work here: <a href="http://jsfiddle.net/4BATs/1/">http://jsfiddle.net/4BATs/1/</a></p>
+			</section>
+		</div>
+
+		<div class="slide">
+			<header>Example Widget - RadioSwitcher</header>
+			<section>
+				<pre>var switcher = 
+	new RadioSwitcher(
+		'#anotherplaceholder', 
+		{ 'sports image': 'sports', 'landscape image': 'landscape' }, 
+		'ImageTypes');</pre>
+				<style type="text/css">
+					.noList {
+						list-style: none;
+					}
+					
+					.switcher {
+						font-size: 14px;
+					}
+				</style>
+				<img src="http://facultyclub.duke.edu/images/minicamp2.jpg" id="sports" />
+				<img src="http://t2.gstatic.com/images?q=tbn:Oly6uPACfvEPFM:http://www.socksoff.co.uk/00001/page06/Winter_Landscape_1600.jpg&t=1" id="landscape" />
+				<div class="switcher"><h1>RadioSwitcher Widget</h1><div id="anotherplaceholder"></div></div>
+				<script type="text/javascript" src="js/RadioSwitcher.js"></script>
+				<script type="text/javascript">
+					var switcher = new RadioSwitcher('#anotherplaceholder', { 'sports image': 'sports', 'landscape image': 'landscape' }, 'ImageTypes');
+					switcher.buttonList.addClass('noList');
+				</script>
+			</section>
+		</div>
+
+		<div class="slide">
+			<header>Exercise - Complete the widget</header>
+			<section>
+				<p>In the interest of building up your jQuery chops, write the function that actually does the switching.</p>
+				<p>Please complete the work here: <a href="http://jsfiddle.net/a5GcJ/1/">http://jsfiddle.net/a5GcJ/1/</a></p>
 			</section>
 		</div>
 		
@@ -1446,7 +1482,8 @@ var dependentDropdown
 					<li><a href="http://jsfiddle.net/GYW3n/6/">Counter</a></li>
 					<li><a href="http://jsfiddle.net/WwXhr/1/">Add <tt>sum()</tt> method to arrays</a></li>
 					<li><a href="http://jsfiddle.net/R5SZA/1/">Bidirectional Counter</a></li>
-					<li><a href="http://jsfiddle.net/SYrJQ/1/">Modify Dependent Dropdown Widget</a></li>
+					<li><a href="http://jsfiddle.net/SYrJQ/2/">Modify Dependent Dropdown Widget</a></li>
+					<li><a href="http://jsfiddle.net/yH5R9/">Complete RadioSwitcher Widget</a></li>
 					<li><a href="http://jsfiddle.net/JpxZA/20/">RedBlue Widget</a></li>
 				</ul>
 			</section>
